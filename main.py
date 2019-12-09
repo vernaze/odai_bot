@@ -10,13 +10,9 @@ TOKEN = os.getenv('BOT_TOKEN')
 HISTORY_LIMIT = int(os.getenv('HISTORY_LIMIT'))
 client = discord.Client()
 
-# CHAR_ID = 653161082873184267
-# SITUATION_ID = 653161113558712320
-# THEME_ID = 653202794987388959
-
-CHAR_ID = 653467661291749396
-SITUATION_ID = 653467661291749396
-THEME_ID = 653467609592889347
+CHAR_ID = 653161082873184267
+SITUATION_ID = 653161113558712320
+THEME_ID = 653202794987388959
 
 @client.event
 async def on_ready():
@@ -72,6 +68,10 @@ async def on_message(message):
     situation = random.choice(list(set(situations_sorted)))
 
     await distination_channel.send('キャラクター：' + char.content + '\nシチュエーション：' + situation.content)
+    if char.attachments:
+        files = [discord.File(io.BytesIO(await f.read()), f.filename) for f in char.attachments]
+        await distination_channel.send(files)
+
     return
 
 
