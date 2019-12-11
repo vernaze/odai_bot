@@ -56,20 +56,36 @@ async def on_message(message):
         return
 
     print('generating new ODAI')
+
+    sum_thumbs = lambda message: sum([emoji.count if str(emoji) == '👍' else -emoji.count if str(emoji) == '👎' else 0 for emoji in message.reactions])
+
     situations = await situation_channel.history(limit=HISTORY_LIMIT).flatten()
-    situations_sorted = sorted(situations, key=lambda x: sum([emoji.count if str(emoji) == '👍' else -emoji.count if str(emoji) == '👎' else 0 for emoji in x.reactions]))
+    situations_sorted = sorted(situations, key=sum_thumbs, reverse=True)
+
+    if 'sukebe' not in message.content:
+        print('no-echi')
+        situations_sorted = [s for s in situations_sorted if '🔞' not in s.reactions]
+
+    if 'dosukebe' in message.content:
+        print('echi detected!')
+        situations_sorted = [s for s in situations_sorted if '🔞' in s.reactions]
+
     print([s.content for s in situations_sorted])
 
     chars = await char_channel.history(limit=HISTORY_LIMIT).flatten()
-    chars_sorted = sorted(chars, key=lambda x: sum([emoji.count if str(emoji) == '👍' else -emoji.count if str(emoji) == '👎' else 0 for emoji in x.reactions]))
+    chars_sorted = sorted(chars, key=sum_thumbs, reverse=True)
     print([s.content for s in chars_sorted])
 
     char = random.choice(list(set(chars_sorted)))
     situation = random.choice(list(set(situations_sorted)))
 
-    await distination_channel.send('キャラクター：' + char.content + '\nシチュエーション：' + situation.content)
+    await distination_channel.send('キャラクター：' + char.content)
     if char.attachments:
         files = [discord.File(io.BytesIO(await f.read()), f.filename) for f in char.attachments]
+        await distination_channel.send(files)
+    await distination_channel.send('シチュエーション：' + situation.content)
+    if situation.attachments:
+        files = [discord.File(io.BytesIO(await f.read()), f.filename) for f in situation.attachments]
         await distination_channel.send(files)
 
     return
