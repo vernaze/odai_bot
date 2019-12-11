@@ -64,11 +64,11 @@ async def on_message(message):
 
     if 'sukebe' not in message.content:
         print('no-echi')
-        situations_sorted = [s for s in situations_sorted if '🔞' not in s.reactions]
+        situations_sorted = [s for s in situations_sorted if '🔞' not in [str(e) for e in s.reactions]]
 
     if 'dosukebe' in message.content:
         print('echi detected!')
-        situations_sorted = [s for s in situations_sorted if '🔞' in s.reactions]
+        situations_sorted = [s for s in situations_sorted if '🔞' in [str(e) for e in s.reactions]]
 
     print([s.content for s in situations_sorted])
 
