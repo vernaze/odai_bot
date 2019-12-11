@@ -33,16 +33,18 @@ async def on_message(message):
 
         if 'situation:' in message.content:
             print('situation received')
-            files = [discord.File(io.BytesIO(await f.read()), f.filename) for f in message.attachments]
             await situation_channel.send(message.content.split(':')[1])
-            await situation_channel.send(files=files)
+            if message.attachments:
+                files = [discord.File(io.BytesIO(await f.read()), f.filename) for f in message.attachments]
+                await situation_channel.send(files=files)
             return
 
         elif 'character' in message.content:
             print('new character arrived')
-            files = [discord.File(io.BytesIO(await f.read()), f.filename) for f in message.attachments]
             await char_channel.send(message.content.split(':')[1])
-            await char_channel.send(files=files)
+            if message.atacchments:
+                files = [discord.File(io.BytesIO(await f.read()), f.filename) for f in message.attachments]
+                await char_channel.send(files=files)
             return
 
         else:
@@ -64,11 +66,11 @@ async def on_message(message):
 
     if 'sukebe' not in message.content:
         print('no-echi')
-        situations_sorted = [s for s in situations_sorted if '🔞' not in [str(e) for e in s.reactions]]
+        situations_sorted = [s for s in situations_sorted if '🔞' not in s.reactions]
 
     if 'dosukebe' in message.content:
         print('echi detected!')
-        situations_sorted = [s for s in situations_sorted if '🔞' in [str(e) for e in s.reactions]]
+        situations_sorted = [s for s in situations_sorted if '🔞' in s.reactions]
 
     print([s.content for s in situations_sorted])
 
