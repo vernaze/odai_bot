@@ -13,6 +13,7 @@ client = discord.Client()
 CHAR_ID = 653161082873184267
 SITUATION_ID = 653161113558712320
 THEME_ID = 653202794987388959
+#THEME_ID = 654326252353617933
 
 @client.event
 async def on_ready():
@@ -66,11 +67,11 @@ async def on_message(message):
 
     if 'sukebe' not in message.content:
         print('no-echi')
-        situations_sorted = [s for s in situations_sorted if '🔞' not in s.reactions]
+        situations_sorted = [s for s in situations_sorted if '🔞' not in [str(e) for e in s.reactions]]
 
     if 'dosukebe' in message.content:
         print('echi detected!')
-        situations_sorted = [s for s in situations_sorted if '🔞' in s.reactions]
+        situations_sorted = [s for s in situations_sorted if '🔞' in [str(e) for e in s.reactions]]
 
     print([s.content for s in situations_sorted])
 
@@ -83,12 +84,14 @@ async def on_message(message):
 
     await distination_channel.send('キャラクター：' + char.content)
     if char.attachments:
+        print(char.attachments)
         files = [discord.File(io.BytesIO(await f.read()), f.filename) for f in char.attachments]
-        await distination_channel.send(files)
+        await distination_channel.send(files=files)
     await distination_channel.send('シチュエーション：' + situation.content)
     if situation.attachments:
+        print(situation.attachments)
         files = [discord.File(io.BytesIO(await f.read()), f.filename) for f in situation.attachments]
-        await distination_channel.send(files)
+        await distination_channel.send(files=files)
 
     return
 
