@@ -42,7 +42,7 @@ async def on_message(message):
         elif 'character' in message.content:
             print('new character arrived')
             await char_channel.send(message.content.split(':')[1])
-            if message.atacchments:
+            if message.attachments:
                 files = [discord.File(io.BytesIO(await f.read()), f.filename) for f in message.attachments]
                 await char_channel.send(files=files)
             return
