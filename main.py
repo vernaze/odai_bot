@@ -66,7 +66,8 @@ async def on_message(message):
         print(f'citation detected: {message.content}')
 
         message_id = message.content.split('/')[-1]
-        cited_channel = client.get_channel(message.content.split('/')[-2])
+        cited_channel = client.get_channel(int(message.content.split('/')[-2]))
+        print(cited_channel)
         written_odai = await cited_channel.fetch_message(message_id)
         print(f'applicable message: {written_odai}')
 
