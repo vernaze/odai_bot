@@ -30,6 +30,7 @@ async def on_message(message):
     distination_channel = client.get_channel(THEME_ID)
 
     if 'me' in dir(message.channel):
+        # reactions in DM
         print('DM received from {}'.format(message.author))
 
         if 'situation:' in message.content:
@@ -47,14 +48,43 @@ async def on_message(message):
                 files = [discord.File(io.BytesIO(await f.read()), f.filename) for f in message.attachments]
                 await char_channel.send(files=files)
             return
-
+        else:
+            pass
+        '''
         else:
             await message.channel.send('お題を追加してみましょう！')
             await message.channel.send('character:◯◯\nでキャラクターを、')
             await message.channel.send('situation:◯◯\nでシチュエーションを投稿することができます。')
             await message.channel.send('画像を添付すると同様の画像が対象のチャンネルに投稿されます。参考画像を追加すると便利です。')
             return
+        '''
 
+    if 'https://discordapp.com/channels' in message.content:
+
+        # detect citation like:
+        #   https://discordapp.com/channels/serverID/channelID/messageID
+        print(f'citation detected: {message.content}')
+
+        message_id = message.content.split('/')[-1]
+        written_odai = await message.channel.fetch_message(message_id)
+        print(f'applicable message: {written_odai}')
+
+        if not message.attachments:
+            print('no attached images')
+            return
+
+        print(f'attached files: {message.attachments}')
+        attachment_url = message.attachments[0].url
+        embed = discord.Embed().set_image(url=attachment_url)
+
+        attached_file = message.attachments
+        await written_odai.edit(
+          embed=embed
+        )
+        return
+
+
+    # check mentioned to generate ODAI
     if client.user not in message.mentions:
         return
 
@@ -82,12 +112,11 @@ async def on_message(message):
     char = random.choice(list(set(chars_sorted)))
     situation = random.choice(list(set(situations_sorted)))
 
-    await distination_channel.send('キャラクター：' + char.content)
+    await distination_channel.send(f'キャラクター： {char.content}\nシチュエーション：{situation.content}')
     if char.attachments:
         print(char.attachments)
         files = [discord.File(io.BytesIO(await f.read()), f.filename) for f in char.attachments]
         await distination_channel.send(files=files)
-    await distination_channel.send('シチュエーション：' + situation.content)
     if situation.attachments:
         print(situation.attachments)
         files = [discord.File(io.BytesIO(await f.read()), f.filename) for f in situation.attachments]
